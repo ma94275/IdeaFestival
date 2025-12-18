@@ -68,7 +68,7 @@ export default function Signup() {
                     <span className="text-[50px] text-[#002455] font-noto font-black">PolishMe</span>
                     <span className="text-[16px] font-pretendad font-semibold">회원가입</span>
                 </div>
-                <div className={`flex flex-col ${errors.email || errors.password ? "gap-[10px]" : "gap-[25px]"}`}>
+                <div className="flex flex-col gap-[15px]">
                     <InputBox type="email" label="이메일" placeholder="이메일을 입력하세요" name="email" value={form.email} onChange={handleChange} error={errors.email} />
                     <InputBox type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" name="password" value={form.password} onChange={handleChange} error={errors.password} />
                     <InputBtn label="회원가입" onClick={handleSubmit}/>
