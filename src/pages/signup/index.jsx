@@ -1,28 +1,6 @@
 import { useState } from "react";
-
-function InputBox({type = "text", label, placeholder, name, value, onChange, error}) {
-    //type의 기본값으로 text사용
-    return(
-        <div className="flex flex-col">
-            <label className="font-pretendad font-medium text-[16px] mx-[8px]" htmlFor={name}>{label}</label>
-            <input
-                className={`w-[360px] h-[45px] border rounded-[10px] font-noto text-[14px] px-[12px] py-[12px] 
-                focus:outline-none ${error ? "border-[#FF9898] focus:border-[#FF9898]" : "border-[#D9D9D9] focus:border-[#5E5E5E]"}`}
-                type={type} placeholder={placeholder} name={name} value={value} onChange={onChange} id={name}/>
-            <span className="text-[#FF9898] font-pretendad text-[10px] ml-[8px]">{error}</span>
-        </div>
-    )
-}
-function InputBtn({label, onClick}){
-    return(
-        <div>
-            <button 
-                className="w-[360px] h-[45px] bg-[#002455] text-white rounded-[10px] font-pretendad font-semibold"
-                onClick={onClick}>{label}
-            </button>
-        </div>
-    )
-}
+import InputBox from "../../components/inputBox";
+import InputBtn from "../../components/inputBtn";
 
 export default function Signup() {
     const [form, setForm] = useState({
@@ -90,7 +68,7 @@ export default function Signup() {
                     <span className="text-[50px] text-[#002455] font-noto font-black">PolishMe</span>
                     <span className="text-[16px] font-pretendad font-semibold">회원가입</span>
                 </div>
-                <div className={`flex flex-col ${errors.email || errors.password ? "gap-[12px]" : "gap-[20px]"}`}>
+                <div className={`flex flex-col ${errors.email || errors.password ? "gap-[10px]" : "gap-[25px]"}`}>
                     <InputBox type="email" label="이메일" placeholder="이메일을 입력하세요" name="email" value={form.email} onChange={handleChange} error={errors.email} />
                     <InputBox type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" name="password" value={form.password} onChange={handleChange} error={errors.password} />
                     <InputBtn label="회원가입" onClick={handleSubmit}/>
