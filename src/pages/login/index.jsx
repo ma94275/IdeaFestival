@@ -1,6 +1,7 @@
 import { useState } from "react";
 import InputBox from "../../components/inputBox";
 import InputBtn from "../../components/inputBtn";
+import { loginApi } from "../../api/login";
 import axios from "axios";
 
 const SAVED_USER = {
@@ -52,15 +53,6 @@ export default function Login() {
             return;
         }
 
-        const mockLoginApi = (form) => {
-            if (form.email === "test@example.com" && form.password === "1234") {
-                return {
-                    accessToken: "mock-token",
-                    user: { id: 1, email: form.email },
-                };
-            }
-            throw new Error("INVALID_LOGIN");
-        };
         try {
             // 2️⃣ 백엔드 로그인 요청
             // const response = await axios.post(
@@ -70,30 +62,28 @@ export default function Login() {
             //         password: form.password,
             //     }
             // );
-            const response = await mockLoginApi(form);
+            const response = await loginApi(form);
 
-            console.log("로그인 성공", response.data);
+            console.log("로그인 성공", res);
 
             // 예시: 토큰 저장
-            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("accessToken", res.accessToken);
 
             // 예시: 메인 페이지 이동
-            // navigate("/");
-        } catch (error) {
-            // 4️⃣ 에러 처리
-            if (error.response) {
-                const status = error.response.status;
+            // navigate("/main");
+        } catch (err) {
+            if (err.code === "INVALID_EMAIL") {
+                setErrors((prev) => ({
+                    ...prev,
+                    email: "존재하지 않는 이메일입니다.",
+                }));
+            }
 
-                if (status === 401) {
-                    setErrors({
-                        email: "",
-                        password: "이메일 또는 비밀번호가 올바르지 않습니다",
-                    });
-                } else {
-                    alert("서버 오류가 발생했습니다.");
-                }
-            } else {
-                alert("네트워크 오류가 발생했습니다.");
+            if (err.code === "INVALID_PASSWORD") {
+                setErrors((prev) => ({
+                    ...prev,
+                    password: "비밀번호가 올바르지 않습니다.",
+                }));
             }
         }
 
