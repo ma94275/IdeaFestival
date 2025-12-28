@@ -41,7 +41,7 @@ export default function ProfileSetup() {
     };
     //입력창 변경 시 상태 업데이트
 
-    const handleStart = () => {
+    const handleStart = async () => {
         const nextErrors = {
             name: "",
             major: "",
@@ -49,20 +49,38 @@ export default function ProfileSetup() {
 
         let hasError = false;
 
-        if (form.name === "") {
+        if (!form.name) {
             nextErrors.name = "필수 정보입니다.";
             hasError = true;
         }
-        if (form.major === "") {
+
+        if (!form.major) {
             nextErrors.major = "필수 정보입니다.";
             hasError = true;
         }
-        setErrors(nextErrors);
 
+        setErrors(nextErrors);
         if (hasError) return;
 
-        console.log(form);
-    }
+        try {
+            setLoading(true);
+
+            // ⭐ API 대기 상태
+            await mockProfileSetupApi(form);
+
+            // 성공 시 다음 페이지
+            navigate("/");
+
+        } catch (error) {
+            if (error.code === "INVALID_PROFILE") {
+                alert("프로필 정보를 다시 확인해주세요.");
+            } else {
+                alert("서버 오류가 발생했습니다.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return(
         <div className="flex justify-center items-center min-h-screen">
