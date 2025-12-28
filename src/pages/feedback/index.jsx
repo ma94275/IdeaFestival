@@ -76,34 +76,6 @@ export default function Feedback() {
                         </div>
                     </div>
 
-                    {/* <FeedbackSection
-                        title={aifeedback.form.a1.title}
-                        userAnswer={aifeedback.form.a1.content}
-                        go={aifeedback.form.a1.go}
-                        improve={aifeedback.form.a1.improve}
-                        good={aifeedback.form.a1.good}
-                    />
-                    <FeedbackSection
-                        title={aifeedback.form.a2.title}
-                        userAnswer={aifeedback.form.a2.content}
-                        go={aifeedback.form.a2.go}
-                        improve={aifeedback.form.a2.improve}
-                        good={aifeedback.form.a2.good}
-                    />
-                    <FeedbackSection
-                        title={aifeedback.form.a3.title}
-                        userAnswer={aifeedback.form.a3.content}
-                        go={aifeedback.form.a3.go}
-                        improve={aifeedback.form.a3.improve}
-                        good={aifeedback.form.a3.good}
-                    />
-                    <FeedbackSection
-                        title={aifeedback.form.a4.title}
-                        userAnswer={aifeedback.form.a4.content}
-                        go={aifeedback.form.a4.go}
-                        improve={aifeedback.form.a4.improve}
-                        good={aifeedback.form.a4.good}
-                    /> */}
                     {Object.values(aifeedback.form).map((item, idx) => (
                         <FeedbackSection
                             key={idx}
