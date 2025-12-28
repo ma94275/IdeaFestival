@@ -49,7 +49,7 @@ export default function Login() {
             flex flex-col justify-center items-center gap-[23px]">
 
                 <div className="flex flex-col text-center">
-                    <span className="text-[50px] text-[#002455] font-black">
+                    <span className="font-noto text-[50px] text-[#002455] font-black">
                         PolishMe
                     </span>
                     <span className="text-[16px] font-semibold">
