@@ -1,23 +1,6 @@
-export const loginApi = async ({ email, password }) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (email !== "test@example.com") {
-                reject({ code: "INVALID_EMAIL" });
-                return;
-            }
+import { api } from "./client";
 
-            if (password !== "abc45678##") {
-                reject({ code: "INVALID_PASSWORD" });
-                return;
-            }
-
-            resolve({
-                accessToken: "mock-access-token",
-                user: {
-                    email,
-                    name: "테스트 유저",
-                },
-            });
-        }, 500);
-    });
-};
+export const loginApi = async (email, password) => {
+    const res = await api.post("/auth/login", { email, password });
+    return res.data;
+    };
