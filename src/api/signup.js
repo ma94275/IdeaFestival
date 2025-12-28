@@ -14,6 +14,15 @@ export const mockSignupApi = async (form) => {
                 message: "회원가입 성공",
                 userId: 1,
             });
-        }, 500); // 실제 API 느낌
+        }, 500);
     });
 };
+
+// ⭐ 실제 API로 교체할 때
+// import axios from 'axios';
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+// 
+// export const signupApi = async (form) => {
+//     const response = await axios.post(`${API_URL}/auth/signup`, form);
+//     return response.data;
+// };
