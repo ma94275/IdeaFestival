@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import InputBox from "../../components/inputBox";
 import InputBtn from "../../components/inputBtn";
+import { mockSignupApi } from "../../api/signup";
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -31,48 +32,47 @@ export default function Signup() {
     };
     //입력창 변경 시 상태 업데이트
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const nextErrors = {
             email: "",
             password: "",
         };
-        // const hasError = Boolean(errors.email || errors.password);
 
         if (!form.email) {
             nextErrors.email = "필수 정보입니다.";
         } else if (!form.email.includes("@") || !form.email.includes(".")) {
             nextErrors.email = "올바른 이메일 형식이 아닙니다.";
-        } //이메일 형식 검사
+        }
 
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).+$/;
         if (!form.password) {
             nextErrors.password = "필수 정보입니다.";
         } else if (form.password.length < 10 || form.password.length > 15) {
             nextErrors.password = "비밀번호는 10~15자 이내여야 합니다.";
-        } else if (form.password.includes(" ") || !passwordRegex.test(form.password)){
+        } else if (form.password.includes(" ") || !passwordRegex.test(form.password)) {
             nextErrors.password = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.";
-        } //비밀번호 형식 검사
+        }
 
         setErrors(nextErrors);
-
         if (nextErrors.email || nextErrors.password) return;
-        //둘중 하나라도 에러가 있으면 종료
-        // const isValid = !nextErrors.email && !nextErrors.password;
-        // if (!isValid) return;
-        //얘는 필드가 많아질 경우나 조건이 복잡할 경우 더 유용
-        
-        localStorage.setItem(
-            "signupData",
-            JSON.stringify(form)
-        )
-        //회원가입 정보 로컬스토리지에 저장
-        
-        console.log(form);
-        navigate("/profile-setup");
-        //회원가입 성공 시 사용자 정보 페이지로 이동
-    } 
+
+        try {
+            // ⭐ 여기만 나중에 axios로 교체됨
+            const response = await mockSignupApi(form);
+
+            console.log(response);
+            navigate("/profile-setup");
+        } catch (err) {
+            if (err.code === "DUPLICATE_EMAIL") {
+                setErrors((prev) => ({
+                    ...prev,
+                    email: "이미 가입된 이메일입니다.",
+                }));
+            }
+        }
+    };
 
     return (
         <div className="flex justify-center items-center min-h-screen">
