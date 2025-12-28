@@ -12,7 +12,7 @@ export default function Navbar(){
                 <Link to="/home">
                     <img src={home} alt="home" />
                 </Link>
-                <Link to="/user">
+                <Link to="/mypage">
                     <img src={user} alt="user" />
                 </Link>
                 <Link to="/archive">

@@ -6,20 +6,25 @@ import { mockGetArchiveListApi, mockDeleteFeedbackApi } from "../../api/archive"
 
 function FeedbackBox({ data, onDelete, onClick }) {
     const formatDate = (dateString) => {
+        if (!dateString) return "날짜 없음";
         const date = new Date(dateString);
-        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        if (isNaN(date)) return "날짜 없음";
+        return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
     };
 
     const handleDelete = (e) => {
         e.stopPropagation();
-        if (window.confirm('정말 삭제하시겠습니까?')) {
+        if (window.confirm("정말 삭제하시겠습니까?")) {
             onDelete(data.feedbackId);
         }
     };
 
+    const keywords = Array.isArray(data?.user?.keyword) ? data.user.keyword : [];
+
     return (
-        <div 
-            className="w-[800px] h-[200px] bg-[#F4F4F4] rounded-[20px] shadow-[4px_4px_20px_rgba(0,0,0,0.25)]
+        <div
+            className="w-[800px] h-[200px] bg-[#F4F4F4] rounded-[20px]
+            shadow-[4px_4px_20px_rgba(0,0,0,0.25)]
             hover:bg-[#C7C7C7] transition cursor-pointer"
             onClick={onClick}
         >
@@ -27,7 +32,7 @@ function FeedbackBox({ data, onDelete, onClick }) {
                 <div className="flex justify-between items-start">
                     <div className="flex flex-col gap-[8px]">
                         <span className="font-pretendad font-semibold text-[24px]">
-                            {data.user.company} | {data.user.job}
+                            {data?.user?.company || "회사명 없음"} | {data?.user?.job || "직무 없음"}
                         </span>
                         <span className="font-pretendad text-[16px] text-[#696969]">
                             {formatDate(data.createdAt || data.savedAt)}
@@ -35,25 +40,30 @@ function FeedbackBox({ data, onDelete, onClick }) {
                     </div>
                     <button
                         onClick={handleDelete}
-                        className="text-[#FF6B6B] hover:text-[#FF5252] font-pretendad text-[14px] px-[10px] py-[5px]"
+                        className="text-[#FF6B6B] hover:text-[#FF5252]
+                        font-pretendad text-[14px] px-[10px] py-[5px]"
                     >
                         삭제
                     </button>
                 </div>
-                <div className="flex gap-[10px]">
-                    {data.user.keyword.slice(0, 5).map((keyword, index) => (
-                        <span 
+
+                <div className="flex gap-[10px] flex-wrap">
+                    {keywords.slice(0, 5).map((keyword, index) => (
+                        <span
                             key={index}
-                            className="px-[12px] py-[6px] bg-[#E8F4F8] text-[#002455] rounded-[20px] font-pretendad text-[14px]"
+                            className="px-[12px] py-[6px] bg-[#E8F4F8]
+                            text-[#002455] rounded-[20px]
+                            font-pretendad text-[14px]"
                         >
                             {keyword}
                         </span>
                     ))}
                 </div>
+
                 <div className="flex justify-between items-center mt-[10px]">
                     <span className="font-pretendad text-[16px] text-[#696969]">총점</span>
                     <span className="font-pretendad font-bold text-[28px] text-[#002455]">
-                        {data.score.total}점
+                        {data?.score?.total ?? "-"}점
                     </span>
                 </div>
             </div>
@@ -73,28 +83,38 @@ export default function Archive() {
     }, []);
 
     useEffect(() => {
-        if (searchTerm.trim() === "") {
+        if (!searchTerm.trim()) {
             setFilteredList(archiveList);
-        } else {
-            const filtered = archiveList.filter(item => 
-                item.user.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.user.job.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.user.keyword.some(k => k.toLowerCase().includes(searchTerm.toLowerCase()))
-            );
-            setFilteredList(filtered);
+            return;
         }
+
+        const term = searchTerm.toLowerCase();
+
+        const filtered = archiveList.filter((item) => {
+            const company = item?.user?.company?.toLowerCase() || "";
+            const job = item?.user?.job?.toLowerCase() || "";
+            const keywords = Array.isArray(item?.user?.keyword) ? item.user.keyword : [];
+
+            return (
+                company.includes(term) ||
+                job.includes(term) ||
+                keywords.some((k) => k.toLowerCase().includes(term))
+            );
+        });
+
+        setFilteredList(filtered);
     }, [searchTerm, archiveList]);
 
     const fetchArchiveList = async () => {
         setIsLoading(true);
         try {
-            // ⭐ 백엔드 API 연동 대기 상태
             const response = await mockGetArchiveListApi();
-            setArchiveList(response.data);
-            setFilteredList(response.data);
+            const list = Array.isArray(response?.data) ? response.data : [];
+            setArchiveList(list);
+            setFilteredList(list);
         } catch (err) {
-            console.error('보관함 조회 실패:', err);
-            alert('보관함을 불러오는데 실패했습니다.');
+            console.error("보관함 조회 실패:", err);
+            alert("보관함을 불러오는데 실패했습니다.");
         } finally {
             setIsLoading(false);
         }
@@ -102,34 +122,35 @@ export default function Archive() {
 
     const handleDelete = async (feedbackId) => {
         try {
-            // ⭐ 백엔드 API 연동 대기 상태
             await mockDeleteFeedbackApi(feedbackId);
-            setArchiveList(prev => prev.filter(item => item.feedbackId !== feedbackId));
-            alert('삭제되었습니다.');
+            setArchiveList((prev) => prev.filter((item) => item.feedbackId !== feedbackId));
+            alert("삭제되었습니다.");
         } catch (err) {
-            console.error('삭제 실패:', err);
-            alert('삭제에 실패했습니다.');
+            console.error("삭제 실패:", err);
+            alert("삭제에 실패했습니다.");
         }
     };
 
     const handleCardClick = (data) => {
-        navigate('/feedback', {
-            state: data
-        });
+        navigate("/feedback", { state: data });
     };
 
     return (
         <div className="min-h-screen bg-[#EBEBEB] flex flex-col">
-            <Navbar/>
+            <Navbar />
+
             <div className="flex flex-col justify-center items-center">
-                <div className="relative w-[700px] h-[70px] rounded-[15px] bg-[#F4F4F4] shadow-[4px_4px_20px_rgba(0,0,0,0.25)] flex items-center my-[70px]">
-                    <img src={search} alt="검색" className="absolute left-[22px]"/>
-                    <input 
-                        type="text" 
+                <div className="relative w-[700px] h-[70px] rounded-[15px]
+                bg-[#F4F4F4] shadow-[4px_4px_20px_rgba(0,0,0,0.25)]
+                flex items-center my-[70px]">
+                    <img src={search} alt="검색" className="absolute left-[22px]" />
+                    <input
+                        type="text"
                         placeholder="검색어를 입력하세요"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full h-full bg-transparent pl-[66px] pr-[20px] font-pretendad text-[20px] focus:outline-none"
+                        className="w-full h-full bg-transparent pl-[66px]
+                        pr-[20px] font-pretendad text-[20px] focus:outline-none"
                     />
                 </div>
 
@@ -144,8 +165,11 @@ export default function Archive() {
                         </p>
                         {!searchTerm && (
                             <button
-                                onClick={() => navigate('/write-chapter1')}
-                                className="px-[30px] py-[15px] bg-[#002455] text-white rounded-[10px] font-pretendad font-semibold hover:bg-[#003670] transition-colors"
+                                onClick={() => navigate("/write-chapter1")}
+                                className="px-[30px] py-[15px] bg-[#002455]
+                                text-white rounded-[10px]
+                                font-pretendad font-semibold
+                                hover:bg-[#003670] transition-colors"
                             >
                                 자소서 작성하러 가기
                             </button>

@@ -4,6 +4,7 @@ import './App.css';
 // Pages
 import Login from './pages/login';
 import Signup from './pages/signup';
+import ProfileSetup from './pages/profile-setup';
 import Home from './pages/home';
 import WriteChapter1 from './pages/write-chapter1';
 import WriteChapter2 from './pages/write-chapter2';
@@ -18,6 +19,7 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/profile-setup" element={<ProfileSetup />} />
 
       <Route path="/home" element={<Home />} />
       <Route path="/write-chapter1" element={<WriteChapter1 />} />
